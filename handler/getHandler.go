@@ -13,18 +13,15 @@ type record struct {
 	expirationTime time.Time
 }
 
-var m sync.Map = sync.Map{}
+var lock sync.Mutex
+var m map[string]record = map[string]record{}
 
 // GetHandler handle / request
 func (h Handler) GetHandler(c *fiber.Ctx) error {
 	ip := c.IP()
 
-	raw, _ := m.LoadOrStore(ip, record{
-		nTimes:         0,
-		expirationTime: time.Now().Add(time.Duration(h.Config.ExpirationSecond) * time.Second),
-	})
-
-	r := raw.(record)
+	lock.Lock()
+	r := m[ip]
 
 	if time.Now().After(r.expirationTime) {
 		r.nTimes = 1
@@ -33,7 +30,9 @@ func (h Handler) GetHandler(c *fiber.Ctx) error {
 		r.nTimes++
 	}
 
-	m.Store(ip, r)
+	m[ip] = r
+
+	lock.Unlock()
 
 	if r.nTimes > h.Config.LimitTimes {
 		return c.SendString("Error")
