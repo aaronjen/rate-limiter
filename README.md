@@ -7,6 +7,8 @@ cd rate-limiter
 go run .
 ```
 
+Server Run 在 http://localhost:3000
+
 ## Package Used
 
 - [fiber](https://docs.gofiber.io/)
