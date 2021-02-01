@@ -3,7 +3,7 @@
 ## Run
 ```bash
 git clone git@github.com:aaronjen/rate-limiter.git
-cd rate-limiter-toy
+cd rate-limiter
 go run .
 ```
 
